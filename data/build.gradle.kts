@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
     kotlin("kapt")
 }
 
@@ -40,12 +41,7 @@ tasks.withType<Test> {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.8.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(project(":core"))
 
     /** Coroutines **/
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
@@ -53,6 +49,28 @@ dependencies {
     /** Hilt **/
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    /** JUnit 5 **/
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+
+    /** MockK **/
+    testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation("io.mockk:mockk-agent-jvm:1.13.4")
+
+    /** Mock web server **/
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
+
+    /** OkHttp **/
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+    /** Retrofit **/
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    /** Room **/
+    implementation("androidx.room:room-runtime:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
 }
 
 kapt {

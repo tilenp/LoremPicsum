@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "LoremPicsum"
 include(":app")
- 
+include(":core")

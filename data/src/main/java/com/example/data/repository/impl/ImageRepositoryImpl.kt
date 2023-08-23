@@ -26,4 +26,8 @@ internal class ImageRepositoryImpl @Inject constructor(
     override fun getImages(): Flow<List<ImageTable>> {
         return imageDao.getImages()
     }
+
+    override fun getImagesForAuthor(author: String): Flow<List<ImageTable>> {
+        return imageDao.getImagesForAuthor(author = author)
+    }
 }

@@ -15,4 +15,11 @@ internal interface ImageDao {
         FROM ImageTable
     """)
     fun getImages(): Flow<List<ImageTable>>
+
+    @Query("""
+        SELECT * 
+        FROM ImageTable
+        WHERE ImageTable.author = :author
+    """)
+    fun getImagesForAuthor(author: String): Flow<List<ImageTable>>
 }

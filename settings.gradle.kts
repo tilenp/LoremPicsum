@@ -17,3 +17,4 @@ rootProject.name = "LoremPicsum"
 include(":app")
 include(":core")
 include(":images")
+include(":data")

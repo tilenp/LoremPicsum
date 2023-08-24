@@ -20,6 +20,7 @@ import com.example.images.R as ImagesR
 
 @Composable
 internal fun DropdownFilter(
+    modifier: Modifier,
     filter: ImageListFilter,
     onDropdownClick: () -> Unit,
     onItemClick: (ImageListFilter, FilterItem) -> Unit,
@@ -27,6 +28,7 @@ internal fun DropdownFilter(
 ) {
     when (filter) {
         is ImageListFilter.Author -> AuthorFilter(
+            modifier = modifier,
             filter = filter,
             onDropdownClick = onDropdownClick,
             onItemClick = onItemClick,
@@ -37,14 +39,14 @@ internal fun DropdownFilter(
 
 @Composable
 private fun AuthorFilter(
+    modifier: Modifier,
     filter: ImageListFilter.Author,
     onDropdownClick: () -> Unit,
     onItemClick: (ImageListFilter, FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .wrapContentSize(Alignment.TopStart)
     ) {
         Text(

@@ -58,7 +58,7 @@ private fun ImageListScreen(
     onDropdownClick: (ImageListFilter) -> Unit,
     onItemClick: (ImageListFilter, FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: (ImageListFilter) -> Unit,
+    onClearFilterClick: () -> Unit,
     onRetryClick: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -104,7 +104,7 @@ private fun ContentView(
     onDropdownClick: (ImageListFilter) -> Unit,
     onItemClick: (ImageListFilter, FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: (ImageListFilter) -> Unit,
+    onClearFilterClick: () -> Unit,
     snackbarHostState: SnackbarHostState,
     onActionPerformed: () -> Unit
 ) {
@@ -134,7 +134,7 @@ private fun FilterView(
     onDropdownClick: (ImageListFilter) -> Unit,
     onItemClick: (ImageListFilter, FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: (ImageListFilter) -> Unit,
+    onClearFilterClick: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -150,7 +150,7 @@ private fun FilterView(
         MyButton(
             modifier = Modifier.weight(1f),
             title = stringResource(id = CoreR.string.clear),
-            onClick = { onClearFilterClick(filter) }
+            onClick = onClearFilterClick
         )
     }
 }

@@ -108,7 +108,7 @@ internal class ImageListViewModel @Inject constructor(
         }
     }
 
-    fun clearFilter(filter: ImageListFilter) {
+    fun clearFilter() {
         viewModelScope.launch(dispatcherProvider.main) {
             preferencesRepository.storeFilter(filterItem = null)
         }
@@ -158,21 +158,6 @@ internal class ImageListViewModel @Inject constructor(
                 return data.copy(filter = filter.expand(false))
             }
         }
-
-//        data class ApplyFilter(
-//            val filter: ImageListFilter,
-//            val selectedItem: FilterItem
-//        ) : SingleAction {
-//            override fun map(data: ImageListData): ImageListData {
-//                return data.copy(filter = filter.applyFilter(selectedItem = selectedItem).expand(false))
-//            }
-//        }
-//
-//        data class ClearFilter(val filter: ImageListFilter) : SingleAction {
-//            override fun map(data: ImageListData): ImageListData {
-//                return data.copy(filter = filter.clear())
-//            }
-//        }
 
         data class ShowErrorMessage(val errorMessage: String) : SingleAction {
             override fun map(data: ImageListData): ImageListData {

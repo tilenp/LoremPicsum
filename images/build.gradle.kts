@@ -75,10 +75,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha03")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
 
+    /** DataStore **/
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     /** Hilt **/
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
-    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     /** JUnit 5 **/
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")

@@ -22,7 +22,7 @@ internal sealed interface ImageListFilter {
     }
 }
 
-data class FilterItem(
+internal data class FilterItem(
     val text: String,
     val isSelected: Boolean
 )

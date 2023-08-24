@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.utils.DispatcherProvider
 import com.example.domain.model.Image
+import com.example.domain.usecaae.GetAuthorsUseCase
 import com.example.domain.usecaae.GetImagesUseCase
 import com.example.domain.usecaae.LoadImagesUseCase
 import com.example.images.navigation.image_list.model.FilterItem
 import com.example.images.navigation.image_list.model.ImageListData
 import com.example.images.navigation.image_list.model.ImageListFilter
 import com.example.images.navigation.image_list.model.ImageListState
+import com.example.images.navigation.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -20,8 +22,10 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @HiltViewModel
 internal class ImageListViewModel @Inject constructor(
-    private val getImagesUseCase: GetImagesUseCase,
     private val loadImagesUseCase: LoadImagesUseCase,
+    private val getAuthorsUseCase: GetAuthorsUseCase,
+    private val getImagesUseCase: GetImagesUseCase,
+    private val preferencesRepository: PreferencesRepository,
     private val stateFactory: ImageListStateFactory,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
@@ -64,8 +68,19 @@ internal class ImageListViewModel @Inject constructor(
     }
 
     private fun getImagesFlow(): Flow<SingleAction.Content> {
-        return getImagesUseCase.invoke()
-            .map { images -> SingleAction.Content(images = images) }
+        return preferencesRepository.getFilter()
+            .flatMapLatest { selectedAuthor ->
+                combine(
+                    getAuthorsUseCase.invoke(),
+                    getImagesUseCase.invoke(author = selectedAuthor)
+                ) { authors, images ->
+                    SingleAction.Content(
+                        authors = authors,
+                        images = images,
+                        selectedAuthor = selectedAuthor
+                    )
+                }
+            }
     }
 
     fun refresh() {
@@ -88,13 +103,14 @@ internal class ImageListViewModel @Inject constructor(
 
     fun applyFilter(filter: ImageListFilter, selectedItem: FilterItem) {
         viewModelScope.launch(dispatcherProvider.main) {
-            actionDispatcher.emit(SingleAction.ApplyFilter(filter = filter, selectedItem = selectedItem))
+            preferencesRepository.storeFilter(filterItem = selectedItem)
+            actionDispatcher.emit(SingleAction.CollapseFilter(filter = filter))
         }
     }
 
     fun clearFilter(filter: ImageListFilter) {
         viewModelScope.launch(dispatcherProvider.main) {
-            actionDispatcher.emit(SingleAction.ClearFilter(filter = filter))
+            preferencesRepository.storeFilter(filterItem = null)
         }
     }
 
@@ -115,11 +131,14 @@ internal class ImageListViewModel @Inject constructor(
             }
         }
 
-        data class Content(val images: List<Image>) : SingleAction {
+        data class Content(
+            val authors: List<String>,
+            val images: List<Image>,
+            val selectedAuthor: String?
+        ) : SingleAction {
             override fun map(data: ImageListData): ImageListData {
-                val authors = images.map { it.author }.toSet()
                 val items = authors.map { author ->
-                    FilterItem(text = author, isSelected = false)
+                    FilterItem(text = author, isSelected = author == selectedAuthor)
                 }
                 return data.copy(
                     filter = ImageListFilter.Author(expanded = false, items = items),
@@ -140,20 +159,20 @@ internal class ImageListViewModel @Inject constructor(
             }
         }
 
-        data class ApplyFilter(
-            val filter: ImageListFilter,
-            val selectedItem: FilterItem
-        ) : SingleAction {
-            override fun map(data: ImageListData): ImageListData {
-                return data.copy(filter = filter.applyFilter(selectedItem = selectedItem).expand(false))
-            }
-        }
-
-        data class ClearFilter(val filter: ImageListFilter) : SingleAction {
-            override fun map(data: ImageListData): ImageListData {
-                return data.copy(filter = filter.clear())
-            }
-        }
+//        data class ApplyFilter(
+//            val filter: ImageListFilter,
+//            val selectedItem: FilterItem
+//        ) : SingleAction {
+//            override fun map(data: ImageListData): ImageListData {
+//                return data.copy(filter = filter.applyFilter(selectedItem = selectedItem).expand(false))
+//            }
+//        }
+//
+//        data class ClearFilter(val filter: ImageListFilter) : SingleAction {
+//            override fun map(data: ImageListData): ImageListData {
+//                return data.copy(filter = filter.clear())
+//            }
+//        }
 
         data class ShowErrorMessage(val errorMessage: String) : SingleAction {
             override fun map(data: ImageListData): ImageListData {

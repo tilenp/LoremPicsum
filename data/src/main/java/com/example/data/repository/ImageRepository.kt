@@ -7,6 +7,8 @@ interface ImageRepository {
 
     suspend fun loadImages()
 
+    fun getAuthors(): Flow<List<String>>
+
     fun getImages(): Flow<List<ImageTable>>
 
     fun getImagesForAuthor(author: String): Flow<List<ImageTable>>

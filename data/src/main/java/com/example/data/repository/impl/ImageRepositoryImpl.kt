@@ -7,6 +7,7 @@ import com.example.data.model.dto.ImageDto
 import com.example.data.model.table.ImageTable
 import com.example.data.repository.ImageRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +22,10 @@ internal class ImageRepositoryImpl @Inject constructor(
         val imageDtoList = api.loadImages()
         val imageTableList = imageDtoList.map { imageDao -> imageTableMapper.map(imageDao) }
         imageDao.insertImages(images = imageTableList.filterNotNull())
+    }
+
+    override fun getAuthors(): Flow<List<String>> {
+        return imageDao.getAuthors()
     }
 
     override fun getImages(): Flow<List<ImageTable>> {

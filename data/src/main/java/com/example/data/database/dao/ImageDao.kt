@@ -11,6 +11,13 @@ internal interface ImageDao {
     suspend fun insertImages(images: List<ImageTable>)
 
     @Query("""
+        SELECT ImageTable.author 
+        FROM ImageTable
+        GROUP BY ImageTable.author
+    """)
+    fun getAuthors(): Flow<List<String>>
+
+    @Query("""
         SELECT * 
         FROM ImageTable
     """)

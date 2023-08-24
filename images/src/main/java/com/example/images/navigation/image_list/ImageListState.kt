@@ -7,7 +7,12 @@ internal sealed interface ImageListState {
     data class Data(
         val filter: ImageListFilter?,
         val images: List<Image>,
+        val snackbarMessage: String?,
     ): ImageListState
     object NothingToShow: ImageListState
-    object Error: ImageListState
+    data class Error(
+        val message: String,
+    ): ImageListState
+
+    object Ignore: ImageListState
 }

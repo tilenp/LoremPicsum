@@ -31,7 +31,7 @@ internal class ImageListViewModel @Inject constructor(
         .scan(initial = ImageListData.INITIAL) { data, action -> action.map(data = data) }
         .map { data -> stateFactory.create(data = data) }
         .stateIn(
-            initialValue = ImageListState.NothingToShow,
+            initialValue = ImageListState.Ignore,
             scope = viewModelScope.plus(dispatcherProvider.io),
             started = SharingStarted.WhileSubscribed(5000)
         )
@@ -50,8 +50,11 @@ internal class ImageListViewModel @Inject constructor(
             .filterIsInstance<MultiAction>()
             .flatMapLatest {
                 loadImagesUseCase.invoke()
-                    .map { message -> SingleAction.ShowMessage(message = message) as Action }
-                    .onStart { emit(SingleAction.Loading) }
+                    .map { message -> SingleAction.ShowErrorMessage(errorMessage = message) as Action }
+                    .onStart {
+                        emit(SingleAction.ClearErrorMessage)
+                        emit(SingleAction.Loading)
+                    }
                     .onCompletion { emit(SingleAction.NotLoading) }
             }
     }
@@ -76,12 +79,6 @@ internal class ImageListViewModel @Inject constructor(
     fun clearFilters() {
         viewModelScope.launch(dispatcherProvider.main) {
             actionDispatcher.emit(SingleAction.ClearFilters)
-        }
-    }
-
-    fun clearMessage() {
-        viewModelScope.launch(dispatcherProvider.main) {
-            actionDispatcher.emit(SingleAction.ClearMessage)
         }
     }
 
@@ -120,15 +117,15 @@ internal class ImageListViewModel @Inject constructor(
             }
         }
 
-        data class ShowMessage(val message: String) : SingleAction {
+        data class ShowErrorMessage(val errorMessage: String) : SingleAction {
             override fun map(data: ImageListData): ImageListData {
-                return data.copy(message = message)
+                return data.copy(errorMessage = errorMessage)
             }
         }
 
-        object ClearMessage : SingleAction {
+        object ClearErrorMessage : SingleAction {
             override fun map(data: ImageListData): ImageListData {
-                return data.copy(message = null)
+                return data.copy(errorMessage = null)
             }
         }
     }

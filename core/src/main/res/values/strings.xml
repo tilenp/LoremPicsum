@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- General -->
+    <string name="retry">Retry</string>
+
+    <!-- Errors -->
     <string name="Network_not_available">Network not available</string>
     <string name="Server_error">Service unavailable, please try again later</string>
     <string name="Unknown_error">Unknown error</string>

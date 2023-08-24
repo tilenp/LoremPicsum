@@ -9,16 +9,21 @@ internal class ImageListStateFactory @Inject constructor() {
     fun create(data: ImageListData): ImageListState {
         return when {
             data.isLoading -> ImageListState.Loading
-            data.images.isEmpty() && data.message != null -> ImageListState.Error
+            data.images.isEmpty() && data.errorMessage != null -> error(message = data.errorMessage)
             data.images.isEmpty() -> ImageListState.NothingToShow
             else -> data(data)
         }
     }
 
+    private fun error(message: String): ImageListState {
+        return ImageListState.Error(message = message)
+    }
+
     private fun data(data: ImageListData): ImageListState {
         return ImageListState.Data(
             filter = data.filter,
-            images = data.images
+            images = data.images,
+            snackbarMessage = data.errorMessage
         )
     }
 }

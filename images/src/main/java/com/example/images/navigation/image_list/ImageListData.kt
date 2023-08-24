@@ -6,14 +6,14 @@ internal data class ImageListData(
     val isLoading: Boolean,
     val filter: ImageListFilter?,
     val images: List<Image>,
-    val message: String?,
+    val errorMessage: String?,
 ) {
     companion object {
         val INITIAL = ImageListData(
             isLoading = false,
             filter = null,
             images = emptyList(),
-            message = null
+            errorMessage = null
         )
     }
 }

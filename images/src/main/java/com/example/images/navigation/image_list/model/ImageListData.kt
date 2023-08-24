@@ -1,4 +1,4 @@
-package com.example.images.navigation.image_list
+package com.example.images.navigation.image_list.model
 
 import com.example.domain.model.Image
 

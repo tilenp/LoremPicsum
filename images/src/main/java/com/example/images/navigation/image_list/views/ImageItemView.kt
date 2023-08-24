@@ -1,4 +1,4 @@
-package com.example.images.navigation.image_list
+package com.example.images.navigation.image_list.views
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*

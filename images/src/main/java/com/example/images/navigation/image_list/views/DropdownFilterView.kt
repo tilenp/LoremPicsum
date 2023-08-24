@@ -1,4 +1,4 @@
-package com.example.images.navigation.image_list
+package com.example.images.navigation.image_list.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.core.ui.theme.Dimens
+import com.example.images.navigation.image_list.model.FilterItem
+import com.example.images.navigation.image_list.model.ImageListFilter
 import com.example.images.R as ImagesR
 
 @Composable
-internal fun DropdownFilter(
+internal fun DropdownFilterView(
     modifier: Modifier,
     filter: ImageListFilter,
     onDropdownClick: () -> Unit,
@@ -27,7 +29,7 @@ internal fun DropdownFilter(
     onDismissRequest: (ImageListFilter) -> Unit
 ) {
     when (filter) {
-        is ImageListFilter.Author -> AuthorFilter(
+        is ImageListFilter.Author -> AuthorFilterView(
             modifier = modifier,
             filter = filter,
             onDropdownClick = onDropdownClick,
@@ -38,7 +40,7 @@ internal fun DropdownFilter(
 }
 
 @Composable
-private fun AuthorFilter(
+private fun AuthorFilterView(
     modifier: Modifier,
     filter: ImageListFilter.Author,
     onDropdownClick: () -> Unit,

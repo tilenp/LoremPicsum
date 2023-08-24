@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.example.images.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.images.navigation.image_list.ImageListScreen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
 fun ImagesNavGraph(
@@ -15,7 +18,7 @@ fun ImagesNavGraph(
         startDestination = Screen.ImageList.route,
     ) {
         composable(route = Screen.ImageList.route) {
-            Text(text = "Hello!")
+            ImageListScreen()
         }
     }
 }

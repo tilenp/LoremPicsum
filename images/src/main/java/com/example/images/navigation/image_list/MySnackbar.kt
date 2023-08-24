@@ -4,7 +4,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun MySnackbar(
@@ -13,14 +15,17 @@ fun MySnackbar(
     actionLabel: String,
     onActionPerformed: () -> Unit
 ) {
-    LaunchedEffect(key1 = null) {
-        val snackbarResult = snackbarHostState.showSnackbar(
-            message = message,
-            actionLabel = actionLabel,
-            duration = SnackbarDuration.Indefinite
-        )
-        if (snackbarResult == SnackbarResult.ActionPerformed) {
-            onActionPerformed()
+    val scope = rememberCoroutineScope()
+    SideEffect {
+        scope.launch {
+            val snackbarResult = snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = actionLabel,
+                duration = SnackbarDuration.Indefinite
+            )
+            if (snackbarResult == SnackbarResult.ActionPerformed) {
+                onActionPerformed()
+            }
         }
     }
 }

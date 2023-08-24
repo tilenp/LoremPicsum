@@ -1,8 +1,4 @@
-@file:OptIn(
-    ExperimentalCoroutinesApi::class,
-    ExperimentalMaterial3Api::class,
-    ExperimentalCoroutinesApi::class
-)
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterial3Api::class)
 
 package com.example.images.navigation.image_list
 
@@ -10,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,13 +37,19 @@ internal fun ImageListScreen(
 
     ImageListScreen(
         state = state,
-        onRetryClick = { viewModel.refresh() }
+        onDropdownClick = viewModel::expandFilter,
+        onItemClick = viewModel::applyFilter,
+        onDismissRequest = viewModel::collapseFilter,
+        onRetryClick = viewModel::refresh,
     )
 }
 
 @Composable
 private fun ImageListScreen(
     state: ImageListState,
+    onDropdownClick: (ImageListFilter) -> Unit,
+    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onDismissRequest: (ImageListFilter) -> Unit,
     onRetryClick: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -61,6 +64,9 @@ private fun ImageListScreen(
 
                 is ImageListState.Data -> ContentView(
                     state = state,
+                    onDropdownClick = onDropdownClick,
+                    onItemClick = onItemClick,
+                    onDismissRequest = onDismissRequest,
                     snackbarHostState = snackbarHostState,
                     onActionPerformed = onRetryClick
                 )
@@ -76,7 +82,8 @@ private fun ImageListScreen(
                     onRetryClick = onRetryClick
                 )
 
-                ImageListState.Ignore -> { /* do nothing */ }
+                ImageListState.Ignore -> { /* do nothing */
+                }
             }
         }
     }
@@ -85,10 +92,19 @@ private fun ImageListScreen(
 @Composable
 private fun ContentView(
     state: ImageListState.Data,
+    onDropdownClick: (ImageListFilter) -> Unit,
+    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onDismissRequest: (ImageListFilter) -> Unit,
     snackbarHostState: SnackbarHostState,
     onActionPerformed: () -> Unit
 ) {
     Column {
+        FilterView(
+            filter = state.filter,
+            onDropdownClick = onDropdownClick,
+            onItemClick = onItemClick,
+            onDismissRequest = onDismissRequest,
+        )
         Images(images = state.images)
         if (state.snackbarMessage != null) {
             MySnackbar(
@@ -98,6 +114,23 @@ private fun ContentView(
                 onActionPerformed = onActionPerformed
             )
         }
+    }
+}
+
+@Composable
+private fun FilterView(
+    filter: ImageListFilter,
+    onDropdownClick: (ImageListFilter) -> Unit,
+    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onDismissRequest: (ImageListFilter) -> Unit,
+) {
+    Row {
+        DropdownFilter(
+            filter = filter,
+            onDropdownClick = { onDropdownClick(filter) },
+            onItemClick = onItemClick,
+            onDismissRequest = onDismissRequest,
+        )
     }
 }
 

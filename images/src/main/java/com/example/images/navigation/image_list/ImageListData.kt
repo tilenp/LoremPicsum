@@ -4,14 +4,14 @@ import com.example.domain.model.Image
 
 internal data class ImageListData(
     val isLoading: Boolean,
-    val filter: ImageListFilter?,
+    val filter: ImageListFilter,
     val images: List<Image>,
     val errorMessage: String?,
 ) {
     companion object {
         val INITIAL = ImageListData(
             isLoading = false,
-            filter = null,
+            filter = ImageListFilter.Author(expanded = false, items = emptyList()),
             images = emptyList(),
             errorMessage = null
         )

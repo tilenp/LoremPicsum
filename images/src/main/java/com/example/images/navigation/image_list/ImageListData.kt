@@ -10,7 +10,7 @@ internal data class ImageListData(
 ) {
     companion object {
         val INITIAL = ImageListData(
-            isLoading = true,
+            isLoading = false,
             filter = null,
             images = emptyList(),
             message = null

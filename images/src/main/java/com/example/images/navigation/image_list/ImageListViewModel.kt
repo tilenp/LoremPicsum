@@ -31,7 +31,7 @@ internal class ImageListViewModel @Inject constructor(
         .scan(initial = ImageListData.INITIAL) { data, action -> action.map(data = data) }
         .map { data -> stateFactory.create(data = data) }
         .stateIn(
-            initialValue = ImageListState.Loading,
+            initialValue = ImageListState.NothingToShow,
             scope = viewModelScope.plus(dispatcherProvider.io),
             started = SharingStarted.WhileSubscribed(5000)
         )

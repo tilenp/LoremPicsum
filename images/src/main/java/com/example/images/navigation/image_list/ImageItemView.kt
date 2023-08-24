@@ -28,7 +28,8 @@ internal fun ImageItemView(
 ) {
     Surface(
         shape = RoundedCornerShape(Dimens.spacing8),
-        shadowElevation = Dimens.spacing4
+        shadowElevation = Dimens.spacing4,
+        color = MaterialTheme.colorScheme.inverseSurface
     ) {
         Column(
             modifier = modifier,
@@ -76,7 +77,8 @@ private fun ImageInfo(
         modifier = modifier,
         text = author,
         style = MaterialTheme.typography.bodyMedium,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        color = MaterialTheme.colorScheme.inverseOnSurface
     )
 }
 

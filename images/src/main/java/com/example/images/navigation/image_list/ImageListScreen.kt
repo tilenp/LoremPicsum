@@ -2,6 +2,8 @@
 
 package com.example.images.navigation.image_list
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,7 +60,10 @@ private fun LoadingView(
 private fun Images(
     images: List<Image>
 ) {
-    LazyColumn() {
+    LazyColumn(
+        contentPadding = PaddingValues(all = Dimens.spacing8),
+        verticalArrangement = Arrangement.spacedBy(Dimens.spacing8)
+    ) {
         items(images) { image -> ImageItemView(image = image) }
     }
 }

@@ -25,7 +25,7 @@ internal fun DropdownFilterView(
     modifier: Modifier,
     filter: ImageListFilter,
     onDropdownClick: () -> Unit,
-    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onItemClick: (FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit
 ) {
     when (filter) {
@@ -44,7 +44,7 @@ private fun AuthorFilterView(
     modifier: Modifier,
     filter: ImageListFilter.Author,
     onDropdownClick: () -> Unit,
-    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onItemClick: (FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit
 ) {
     Box(
@@ -81,7 +81,7 @@ private fun AuthorFilterView(
                             color = MaterialTheme.colorScheme.inverseOnSurface
                         )
                     },
-                    onClick = { onItemClick(filter, item) }
+                    onClick = { onItemClick(item) }
                 )
             }
         }

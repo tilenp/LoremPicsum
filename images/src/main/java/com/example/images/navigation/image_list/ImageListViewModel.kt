@@ -30,11 +30,10 @@ internal class ImageListViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
-    private val actionDispatcher = MutableSharedFlow<Action>()
+    private val eventDispatcher = MutableSharedFlow<Event>()
     val state = merge(
-        getSingleActionFlow(),
-        getMultiActionFlow(),
-        getImagesFlow(),
+        eventDispatcher.flatMapLatest { event -> event.execute() },
+        contentFlow()
     )
         .scan(initial = ImageListData.INITIAL) { data, action -> action.map(data = data) }
         .map { data -> stateFactory.create(data = data) }
@@ -44,37 +43,14 @@ internal class ImageListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000)
         )
 
-    init {
-        refresh()
-    }
-
-    private fun getSingleActionFlow(): Flow<SingleAction> {
-        return actionDispatcher
-            .filterIsInstance<SingleAction>()
-    }
-
-    private fun getMultiActionFlow(): Flow<Action> {
-        return actionDispatcher
-            .filterIsInstance<MultiAction>()
-            .flatMapLatest {
-                loadImagesUseCase.invoke()
-                    .map { message -> SingleAction.ShowErrorMessage(errorMessage = message) as Action }
-                    .onStart {
-                        emit(SingleAction.ClearErrorMessage)
-                        emit(SingleAction.Loading)
-                    }
-                    .onCompletion { emit(SingleAction.NotLoading) }
-            }
-    }
-
-    private fun getImagesFlow(): Flow<SingleAction.Content> {
+    private fun contentFlow(): Flow<Action> {
         return preferencesRepository.getFilter()
             .flatMapLatest { selectedAuthor ->
                 combine(
                     getAuthorsUseCase.invoke(),
                     getImagesUseCase.invoke(author = selectedAuthor)
                 ) { authors, images ->
-                    SingleAction.Content(
+                    Action.Content(
                         authors = authors,
                         images = images,
                         selectedAuthor = selectedAuthor
@@ -83,49 +59,108 @@ internal class ImageListViewModel @Inject constructor(
             }
     }
 
+    init {
+        refresh()
+    }
+
     fun refresh() {
         viewModelScope.launch(dispatcherProvider.main) {
-            actionDispatcher.emit(MultiAction.Refresh)
+            eventDispatcher.emit(Event.Refresh(loadImages = loadImagesUseCase.invoke()))
         }
     }
 
     fun expandFilter(filter: ImageListFilter) {
         viewModelScope.launch(dispatcherProvider.main) {
-            actionDispatcher.emit(SingleAction.ExpandFilter(filter = filter))
+            eventDispatcher.emit(Event.ExpandFilter(filter = filter))
+        }
+    }
+
+    fun applyFilter(filterItem: FilterItem) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            eventDispatcher.emit(
+                Event.ApplyFilter(
+                    filterItem = filterItem,
+                    preferencesRepository = preferencesRepository
+                )
+            )
         }
     }
 
     fun collapseFilter(filter: ImageListFilter) {
         viewModelScope.launch(dispatcherProvider.main) {
-            actionDispatcher.emit(SingleAction.CollapseFilter(filter = filter))
+            eventDispatcher.emit(Event.CollapseFilter(filter = filter))
         }
     }
 
-    fun applyFilter(filter: ImageListFilter, selectedItem: FilterItem) {
+    fun clearFilter(filter: ImageListFilter) {
         viewModelScope.launch(dispatcherProvider.main) {
-            preferencesRepository.storeFilter(filterItem = selectedItem)
-            actionDispatcher.emit(SingleAction.CollapseFilter(filter = filter))
+            eventDispatcher.emit(
+                Event.ClearFilter(
+                    filter = filter,
+                    preferencesRepository = preferencesRepository
+                )
+            )
         }
     }
 
-    fun clearFilter() {
-        viewModelScope.launch(dispatcherProvider.main) {
-            preferencesRepository.storeFilter(filterItem = null)
+    private sealed interface Event {
+        fun execute(): Flow<Action>
+        data class Refresh(val loadImages: Flow<String>) : Event {
+            override fun execute(): Flow<Action> {
+                return loadImages
+                    .map { message -> Action.ShowErrorMessage(errorMessage = message) as Action }
+                    .onStart {
+                        emit(Action.ClearErrorMessage)
+                        emit(Action.Loading)
+                    }.onCompletion { emit(Action.NotLoading) }
+            }
+        }
+
+        data class ExpandFilter(val filter: ImageListFilter) : Event {
+            override fun execute(): Flow<Action> {
+                return flowOf(Action.ExpandFilter(filter = filter))
+            }
+        }
+
+        data class ApplyFilter(
+            val filterItem: FilterItem,
+            val preferencesRepository: PreferencesRepository
+        ) : Event {
+            override fun execute(): Flow<Action> {
+                return flow<Action> { preferencesRepository.storeFilter(filterItem = filterItem) }
+                    .onStart { emit(Action.Loading) }
+                    .onCompletion { emit(Action.NotLoading) }
+            }
+        }
+
+        data class CollapseFilter(val filter: ImageListFilter) : Event {
+            override fun execute(): Flow<Action> {
+                return flowOf(Action.CollapseFilter(filter = filter))
+            }
+        }
+
+        data class ClearFilter(
+            val filter: ImageListFilter,
+            val preferencesRepository: PreferencesRepository
+        ) : Event {
+            override fun execute(): Flow<Action> {
+                return flow<Action> { preferencesRepository.clearFilter(filter = filter) }
+                    .onStart { emit(Action.Loading) }
+                    .onCompletion { emit(Action.NotLoading) }
+            }
         }
     }
 
     private sealed interface Action {
         fun map(data: ImageListData): ImageListData
-    }
 
-    private sealed interface SingleAction : Action {
-        object Loading : SingleAction {
+        object Loading : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(isLoading = true)
             }
         }
 
-        object NotLoading : SingleAction {
+        object NotLoading : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(isLoading = false)
             }
@@ -135,10 +170,13 @@ internal class ImageListViewModel @Inject constructor(
             val authors: List<String>,
             val images: List<Image>,
             val selectedAuthor: String?
-        ) : SingleAction {
+        ) : Action {
             override fun map(data: ImageListData): ImageListData {
+                if (data.isLoading) {
+                    return data
+                }
                 val items = authors.map { author ->
-                    FilterItem(text = author, isSelected = author == selectedAuthor)
+                    FilterItem.Author(text = author, isSelected = author == selectedAuthor)
                 }
                 return data.copy(
                     filter = ImageListFilter.Author(expanded = false, items = items),
@@ -147,35 +185,27 @@ internal class ImageListViewModel @Inject constructor(
             }
         }
 
-        data class ExpandFilter(val filter: ImageListFilter) : SingleAction {
+        data class ExpandFilter(val filter: ImageListFilter) : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(filter = filter.expand(true))
             }
         }
 
-        data class CollapseFilter(val filter: ImageListFilter) : SingleAction {
+        data class CollapseFilter(val filter: ImageListFilter) : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(filter = filter.expand(false))
             }
         }
 
-        data class ShowErrorMessage(val errorMessage: String) : SingleAction {
+        data class ShowErrorMessage(val errorMessage: String) : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(errorMessage = errorMessage)
             }
         }
 
-        object ClearErrorMessage : SingleAction {
+        object ClearErrorMessage : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(errorMessage = null)
-            }
-        }
-    }
-
-    private sealed interface MultiAction : Action {
-        object Refresh : MultiAction {
-            override fun map(data: ImageListData): ImageListData {
-                return data
             }
         }
     }

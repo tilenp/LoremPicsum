@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.images.navigation.image_list.model.FilterItem
+import com.example.images.navigation.image_list.model.ImageListFilter
 import com.example.images.navigation.preferences.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -23,11 +24,18 @@ internal class PreferencesRepositoryImpl @Inject constructor(
         val AUTHOR_FILTER = stringPreferencesKey("AUTHOR")
     }
 
-    override suspend fun storeFilter(filterItem: FilterItem?) {
+    override suspend fun storeFilter(filterItem: FilterItem) {
         dataStore.edit { preferences ->
-            when {
-                filterItem != null -> preferences[PreferencesKeys.AUTHOR_FILTER] = filterItem.text
-                else -> preferences.remove(PreferencesKeys.AUTHOR_FILTER)
+            when (filterItem) {
+                is FilterItem.Author -> preferences[PreferencesKeys.AUTHOR_FILTER] = filterItem.text
+            }
+        }
+    }
+
+    override suspend fun clearFilter(filter: ImageListFilter) {
+        dataStore.edit { preferences ->
+            when (filter) {
+                is ImageListFilter.Author -> preferences.remove(PreferencesKeys.AUTHOR_FILTER)
             }
         }
     }

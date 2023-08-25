@@ -4,7 +4,7 @@ import com.example.domain.model.Image
 
 internal sealed interface ImageListState {
     object Loading: ImageListState
-    data class Data(
+    data class Content(
         val filter: ImageListFilter,
         val images: List<Image>,
         val snackbarMessage: String?,

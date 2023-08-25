@@ -9,10 +9,19 @@ internal sealed interface ImageListFilter {
         override fun expand(expand: Boolean): ImageListFilter {
             return copy(expanded = expand)
         }
+
+        companion object {
+            val INITIAL = Author(expanded = false, items = emptyList())
+        }
     }
 }
 
-internal data class FilterItem(
-    val text: String,
+internal sealed interface FilterItem {
+    val text: String
     val isSelected: Boolean
-)
+
+    data class Author(
+        override val text: String,
+        override val isSelected: Boolean
+    ): FilterItem
+}

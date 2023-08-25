@@ -56,9 +56,9 @@ internal fun ImageListScreen(
 private fun ImageListScreen(
     state: ImageListState,
     onDropdownClick: (ImageListFilter) -> Unit,
-    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onItemClick: (FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: () -> Unit,
+    onClearFilterClick: (ImageListFilter) -> Unit,
     onRetryClick: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -71,7 +71,7 @@ private fun ImageListScreen(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                is ImageListState.Data -> ContentView(
+                is ImageListState.Content -> ContentView(
                     state = state,
                     onDropdownClick = onDropdownClick,
                     onItemClick = onItemClick,
@@ -100,11 +100,11 @@ private fun ImageListScreen(
 
 @Composable
 private fun ContentView(
-    state: ImageListState.Data,
+    state: ImageListState.Content,
     onDropdownClick: (ImageListFilter) -> Unit,
-    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onItemClick: (FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: () -> Unit,
+    onClearFilterClick: (ImageListFilter) -> Unit,
     snackbarHostState: SnackbarHostState,
     onActionPerformed: () -> Unit
 ) {
@@ -132,9 +132,9 @@ private fun ContentView(
 private fun FilterView(
     filter: ImageListFilter,
     onDropdownClick: (ImageListFilter) -> Unit,
-    onItemClick: (ImageListFilter, FilterItem) -> Unit,
+    onItemClick: (FilterItem) -> Unit,
     onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: () -> Unit,
+    onClearFilterClick: (ImageListFilter) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -150,7 +150,7 @@ private fun FilterView(
         MyButton(
             modifier = Modifier.weight(1f),
             title = stringResource(id = CoreR.string.clear),
-            onClick = onClearFilterClick
+            onClick = { onClearFilterClick(filter) }
         )
     }
 }

@@ -10,6 +10,7 @@ import com.example.domain.usecaae.LoadImagesUseCase
 import com.example.images.navigation.image_list.model.FilterItem
 import com.example.images.navigation.image_list.model.ImageListData
 import com.example.images.navigation.image_list.model.ImageListFilter
+import com.example.images.navigation.image_list.model.ImageListFilter.Author.Companion.authorFilter
 import com.example.images.navigation.image_list.model.ImageListState
 import com.example.images.navigation.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -175,11 +176,8 @@ internal class ImageListViewModel @Inject constructor(
                 if (data.isLoading) {
                     return data
                 }
-                val items = authors.map { author ->
-                    FilterItem.Author(text = author, isSelected = author == selectedAuthor)
-                }
                 return data.copy(
-                    filter = ImageListFilter.Author(expanded = false, items = items),
+                    filter = authorFilter(authors = authors, selectedAuthor = selectedAuthor),
                     images = images,
                 )
             }

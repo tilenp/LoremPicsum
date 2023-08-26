@@ -1,4 +1,4 @@
-package com.example.images.navigation.image_list
+package com.example.images.navigation.image_list.view_model
 
 import com.example.images.navigation.image_list.model.ImageListData
 import com.example.images.navigation.image_list.model.ImageListState

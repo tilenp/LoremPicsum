@@ -6,7 +6,6 @@ import com.example.core.utils.DispatcherProvider
 import com.example.domain.usecaae.GetAuthorsUseCase
 import com.example.domain.usecaae.GetImagesUseCase
 import com.example.domain.usecaae.LoadImagesUseCase
-import com.example.images.navigation.image_list.ImageListStateFactory
 import com.example.images.navigation.image_list.model.FilterItem
 import com.example.images.navigation.image_list.model.ImageListData
 import com.example.images.navigation.image_list.model.ImageListFilter

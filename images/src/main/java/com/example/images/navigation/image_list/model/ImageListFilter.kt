@@ -2,12 +2,21 @@ package com.example.images.navigation.image_list.model
 
 internal sealed interface ImageListFilter {
     fun expand(expand: Boolean): ImageListFilter
+    fun collapseIfContainsItem(filterItem: FilterItem): ImageListFilter
     data class Author private constructor(
         val expanded: Boolean,
         val items: List<FilterItem>,
     ) : ImageListFilter {
         override fun expand(expand: Boolean): ImageListFilter {
             return copy(expanded = expand)
+        }
+
+        override fun collapseIfContainsItem(filterItem: FilterItem): ImageListFilter {
+            return if (items.contains(filterItem)) {
+                copy(expanded = false)
+            } else {
+                this
+            }
         }
 
         companion object {

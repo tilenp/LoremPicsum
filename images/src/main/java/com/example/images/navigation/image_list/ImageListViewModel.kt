@@ -129,7 +129,10 @@ internal class ImageListViewModel @Inject constructor(
         ) : Event {
             override fun execute(): Flow<Action> {
                 return flow<Action> { preferencesRepository.storeFilter(filterItem = filterItem) }
-                    .onStart { emit(Action.Loading) }
+                    .onStart {
+                        emit(Action.CollapseFilterWithItem(filterItem = filterItem))
+                        emit(Action.Loading)
+                    }
                     .onCompletion { emit(Action.NotLoading) }
             }
         }
@@ -192,6 +195,12 @@ internal class ImageListViewModel @Inject constructor(
         data class CollapseFilter(val filter: ImageListFilter) : Action {
             override fun map(data: ImageListData): ImageListData {
                 return data.copy(filter = filter.expand(false))
+            }
+        }
+
+        data class CollapseFilterWithItem(val filterItem: FilterItem) : Action {
+            override fun map(data: ImageListData): ImageListData {
+                return data.copy(filter = data.filter.collapseIfContainsItem(filterItem = filterItem))
             }
         }
 

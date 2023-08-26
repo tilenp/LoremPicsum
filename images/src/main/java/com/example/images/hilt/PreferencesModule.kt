@@ -1,11 +1,11 @@
-package com.example.images.navigation.hilt
+package com.example.images.hilt
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.images.navigation.preferences.PreferencesRepository
-import com.example.images.navigation.preferences.impl.PreferencesRepositoryImpl
+import com.example.images.preferences.PreferencesRepository
+import com.example.images.preferences.impl.PreferencesRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

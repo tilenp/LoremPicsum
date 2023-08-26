@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.images.navigation.image_list.views.ImageListScreen
+import com.example.images.image_list.views.ImageListScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable

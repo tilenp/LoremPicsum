@@ -1,13 +1,13 @@
-package com.example.images.navigation.preferences.impl
+package com.example.images.preferences.impl
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.images.navigation.image_list.model.FilterItem
-import com.example.images.navigation.image_list.model.ImageListFilter
-import com.example.images.navigation.preferences.PreferencesRepository
+import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.ImageListFilter
+import com.example.images.preferences.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

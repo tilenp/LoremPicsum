@@ -1,4 +1,4 @@
-package com.example.images.navigation.common
+package com.example.images.common
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image

@@ -1,4 +1,4 @@
-package com.example.images.navigation.image_list.model
+package com.example.images.image_list.model
 
 internal sealed interface ImageListFilter {
     fun expand(expand: Boolean): ImageListFilter

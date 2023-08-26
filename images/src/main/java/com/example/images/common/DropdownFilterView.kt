@@ -1,4 +1,4 @@
-package com.example.images.navigation.common
+package com.example.images.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.core.ui.theme.Dimens
-import com.example.images.navigation.image_list.model.FilterItem
-import com.example.images.navigation.image_list.model.ImageListFilter
+import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.ImageListFilter
 import com.example.images.R as ImagesR
 
 @Composable

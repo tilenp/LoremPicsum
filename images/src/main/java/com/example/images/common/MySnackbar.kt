@@ -1,4 +1,4 @@
-package com.example.images.navigation.common
+package com.example.images.common
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState

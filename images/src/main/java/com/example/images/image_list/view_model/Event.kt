@@ -1,8 +1,8 @@
-package com.example.images.navigation.image_list.view_model
+package com.example.images.image_list.view_model
 
-import com.example.images.navigation.image_list.model.FilterItem
-import com.example.images.navigation.image_list.model.ImageListFilter
-import com.example.images.navigation.preferences.PreferencesRepository
+import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.ImageListFilter
+import com.example.images.preferences.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf

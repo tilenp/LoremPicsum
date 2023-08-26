@@ -1,9 +1,9 @@
-package com.example.images.navigation.image_list.view_model
+package com.example.images.image_list.view_model
 
 import com.example.domain.model.Image
-import com.example.images.navigation.image_list.model.FilterItem
-import com.example.images.navigation.image_list.model.ImageListData
-import com.example.images.navigation.image_list.model.ImageListFilter
+import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.ImageListData
+import com.example.images.image_list.model.ImageListFilter
 
 internal sealed interface Action {
     fun map(data: ImageListData): ImageListData

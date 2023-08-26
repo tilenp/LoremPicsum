@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterial3Api::class)
 
-package com.example.images.navigation.image_list.views
+package com.example.images.image_list.views
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,15 +27,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.ui.theme.Dimens
 import com.example.domain.model.Image
-import com.example.images.navigation.common.DropdownFilterView
-import com.example.images.navigation.common.LoadingView
-import com.example.images.navigation.common.MessageView
-import com.example.images.navigation.common.MyButton
-import com.example.images.navigation.common.MySnackbar
-import com.example.images.navigation.image_list.model.FilterItem
-import com.example.images.navigation.image_list.model.ImageListFilter
-import com.example.images.navigation.image_list.model.ImageListState
-import com.example.images.navigation.image_list.view_model.ImageListViewModel
+import com.example.images.common.DropdownFilterView
+import com.example.images.common.LoadingView
+import com.example.images.common.MessageView
+import com.example.images.common.MyButton
+import com.example.images.common.MySnackbar
+import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.ImageListState
+import com.example.images.image_list.view_model.ImageListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.example.core.R as CoreR
 import com.example.images.R as ImagesR

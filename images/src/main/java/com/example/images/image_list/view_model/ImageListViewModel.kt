@@ -1,4 +1,4 @@
-package com.example.images.navigation.image_list.view_model
+package com.example.images.image_list.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,11 +6,11 @@ import com.example.core.utils.DispatcherProvider
 import com.example.domain.usecaae.GetAuthorsUseCase
 import com.example.domain.usecaae.GetImagesUseCase
 import com.example.domain.usecaae.LoadImagesUseCase
-import com.example.images.navigation.image_list.model.FilterItem
-import com.example.images.navigation.image_list.model.ImageListData
-import com.example.images.navigation.image_list.model.ImageListFilter
-import com.example.images.navigation.image_list.model.ImageListState
-import com.example.images.navigation.preferences.PreferencesRepository
+import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.ImageListData
+import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.ImageListState
+import com.example.images.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*

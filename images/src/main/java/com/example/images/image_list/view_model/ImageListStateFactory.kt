@@ -1,7 +1,7 @@
-package com.example.images.navigation.image_list.view_model
+package com.example.images.image_list.view_model
 
-import com.example.images.navigation.image_list.model.ImageListData
-import com.example.images.navigation.image_list.model.ImageListState
+import com.example.images.image_list.model.ImageListData
+import com.example.images.image_list.model.ImageListState
 import javax.inject.Inject
 import javax.inject.Singleton
 

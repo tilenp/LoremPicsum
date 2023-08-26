@@ -30,7 +30,7 @@ import com.example.domain.model.Image
 import com.example.images.navigation.image_list.model.FilterItem
 import com.example.images.navigation.image_list.model.ImageListFilter
 import com.example.images.navigation.image_list.model.ImageListState
-import com.example.images.navigation.image_list.ImageListViewModel
+import com.example.images.navigation.image_list.view_model.ImageListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.example.core.R as CoreR
 import com.example.images.R as ImagesR

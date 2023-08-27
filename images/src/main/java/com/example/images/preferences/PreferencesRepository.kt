@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 internal interface PreferencesRepository {
     suspend fun storeFilter(filterItem: FilterItem)
     suspend fun clearFilter(filter: ImageListFilter)
-    fun getFilter(): Flow<String?>
+    fun getFilter(): Flow<FilterItem?>
 }

@@ -40,7 +40,7 @@ internal class PreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getFilter(): Flow<String?> {
+    override fun getFilter(): Flow<FilterItem?> {
         return dataStore.data
             .catch { exception -> emit(handleReadException(throwable = exception)) }
             .map { preferences -> mapFilter(preferences = preferences) }
@@ -53,7 +53,9 @@ internal class PreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun mapFilter(preferences: Preferences): String? {
-        return preferences[PreferencesKeys.AUTHOR_FILTER]
+    private fun mapFilter(preferences: Preferences): FilterItem? {
+        return preferences[PreferencesKeys.AUTHOR_FILTER]?.let { text ->
+            FilterItem.Author(text = text, isSelected = true)
+        }
     }
 }

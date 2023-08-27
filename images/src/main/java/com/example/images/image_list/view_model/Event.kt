@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onStart
 
 internal sealed interface Event {
     fun execute(): Flow<Action>
-    data class Refresh(val loadImages: Flow<String>) : Event {
+    data class LoadImages(val loadImages: Flow<String>) : Event {
         override fun execute(): Flow<Action> {
             return loadImages
                 .map { message -> Action.ShowErrorMessage(errorMessage = message) as Action }
@@ -38,8 +38,7 @@ internal sealed interface Event {
                 .onStart {
                     emit(Action.CollapseFilterWithItem(filterItem = filterItem))
                     emit(Action.Loading)
-                }
-                .onCompletion { emit(Action.NotLoading) }
+                }.onCompletion { emit(Action.NotLoading) }
         }
     }
 

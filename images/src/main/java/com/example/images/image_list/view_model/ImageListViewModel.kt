@@ -32,7 +32,8 @@ internal class ImageListViewModel @Inject constructor(
     private val eventDispatcher = MutableSharedFlow<Event>(replay = 1)
     val state = merge(
         eventDispatcher.flatMapLatest { event -> event.execute() },
-        contentFlow()
+        filtersFlow(),
+        imagesFlow()
     )
         .scan(initial = ImageListData.INITIAL) { data, action -> action.map(data = data) }
         .map { data -> stateFactory.create(data = data) }
@@ -42,19 +43,24 @@ internal class ImageListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000)
         )
 
-    private fun contentFlow(): Flow<Action> {
+    private fun filtersFlow(): Flow<Action> {
+        return getAuthorsUseCase.invoke()
+            .flatMapLatest { authors ->
+                preferencesRepository.getFilter()
+                    .map { selectedItem ->
+                        Action.ShowFilters(
+                            items = authors,
+                            selectedItem = selectedItem,
+                        )
+                    }
+            }
+    }
+
+    private fun imagesFlow(): Flow<Action> {
         return preferencesRepository.getFilter()
-            .flatMapLatest { selectedAuthor ->
-                combine(
-                    getAuthorsUseCase.invoke(),
-                    getImagesUseCase.invoke(author = selectedAuthor)
-                ) { authors, images ->
-                    Action.Content(
-                        authors = authors,
-                        images = images,
-                        selectedAuthor = selectedAuthor
-                    )
-                }
+            .flatMapLatest { selectedFilter ->
+                getImagesUseCase.invoke(author = selectedFilter?.text)
+                    .map { images -> Action.ShowImages(images = images) }
             }
     }
 
@@ -64,7 +70,7 @@ internal class ImageListViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch(dispatcherProvider.main) {
-            eventDispatcher.emit(Event.Refresh(loadImages = loadImagesUseCase.invoke()))
+            eventDispatcher.emit(Event.LoadImages(loadImages = loadImagesUseCase.invoke()))
         }
     }
 

@@ -22,11 +22,11 @@ internal sealed interface ImageListFilter {
         companion object {
             val INITIAL = Author(expanded = false, items = emptyList())
 
-            fun authorFilter(authors: List<String>, selectedAuthor: String?): Author {
-                val items = authors.map { author ->
-                    FilterItem.Author(text = author, isSelected = author == selectedAuthor)
+            fun buildFilter(items: List<String>, selectedItem: FilterItem?): ImageListFilter {
+                val authorItems = items.map { author ->
+                    FilterItem.Author(text = author, isSelected = author == selectedItem?.text)
                 }
-                return Author(expanded = false, items = items)
+                return Author(expanded = false, items = authorItems)
             }
         }
     }

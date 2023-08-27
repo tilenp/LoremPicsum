@@ -9,7 +9,7 @@ import com.example.domain.usecaae.GetImagesUseCase
 import com.example.domain.usecaae.LoadImagesUseCase
 import com.example.images.FakeDispatcherProvider
 import com.example.images.image_list.model.FilterItem
-import com.example.images.image_list.model.ImageListFilter.Author.Companion.authorFilter
+import com.example.images.image_list.model.ImageListFilter.Author.Companion.buildFilter
 import com.example.images.image_list.model.ImageListState
 import com.example.images.preferences.PreferencesRepository
 import io.mockk.coEvery
@@ -35,7 +35,7 @@ internal class ImageListViewModelTest {
     private val preferencesRepository: PreferencesRepository = mockk()
     private val testScope = TestScope()
 
-    private val getFilterFlow = MutableSharedFlow<String?>(replay = 1)
+    private val getFilterFlow = MutableSharedFlow<FilterItem?>(replay = 1)
     private val getAuthorsFlow = MutableSharedFlow<List<String>>(replay = 1)
     private val getImagesFlow = MutableSharedFlow<List<Image>>(replay = 1)
     private val image1 = Image(
@@ -92,9 +92,9 @@ internal class ImageListViewModelTest {
             // show content
             assertEquals(
                 ImageListState.Content(
-                    filter = authorFilter(
-                        authors = listOf("author 1", "author 2"),
-                        selectedAuthor = null
+                    filter = buildFilter(
+                        items = listOf("author 1", "author 2"),
+                        selectedItem = null
                     ),
                     images = listOf(image1, image2),
                     snackbarMessage = null
@@ -189,9 +189,9 @@ internal class ImageListViewModelTest {
             // show content state with an error snackbar
             assertEquals(
                 ImageListState.Content(
-                    filter = authorFilter(
-                        authors = listOf("author 1", "author 2"),
-                        selectedAuthor = null
+                    filter = buildFilter(
+                        items = listOf("author 1", "author 2"),
+                        selectedItem = null
                     ),
                     images = listOf(image1, image2),
                     snackbarMessage = "network error"
@@ -204,11 +204,12 @@ internal class ImageListViewModelTest {
     @Test
     fun `apply filter flow`() = runTest {
         every { loadImagesUseCase.invoke() } returns emptyFlow()
-        val filter = authorFilter(
-            authors = listOf("author 1", "author 2"),
-            selectedAuthor = null
+        val filter = buildFilter(
+            items = listOf("author 1", "author 2"),
+            selectedItem = null
         )
         val filterItem = FilterItem.Author(text = "author 1", isSelected = false)
+        val selectedItem = FilterItem.Author(text = "author 1", isSelected = true)
         setUp()
 
         viewModel.state.test {
@@ -268,14 +269,14 @@ internal class ImageListViewModelTest {
             coVerify(exactly = 1) { preferencesRepository.storeFilter(filterItem = filterItem) }
 
             // DataStore emits selected filter
-            getFilterFlow.emit("author 1")
+            getFilterFlow.emit(selectedItem)
 
             // show content with selected filter
             assertEquals(
                 ImageListState.Content(
-                    filter = authorFilter(
-                        authors = listOf("author 1", "author 2"),
-                        selectedAuthor = "author 1"
+                    filter = buildFilter(
+                        items = listOf("author 1", "author 2"),
+                        selectedItem = selectedItem
                     ),
                     images = listOf(image1, image2),
                     snackbarMessage = null
@@ -283,22 +284,18 @@ internal class ImageListViewModelTest {
                 awaitItem()
             )
 
-            // database queries authors for the 2nd time
-            coVerify(exactly = 2) { getAuthorsUseCase.invoke() }
             // database queries filtered images
             coVerify(exactly = 1) { getImagesUseCase.invoke(author = "author 1") }
 
-            // database emits authors
-            getAuthorsFlow.emit(listOf("author 1", "author 2"))
             // database emits filtered images
             getImagesFlow.emit(listOf(image1))
 
             // show content with filtered images
             assertEquals(
                 ImageListState.Content(
-                    filter = authorFilter(
-                        authors = listOf("author 1", "author 2"),
-                        selectedAuthor = "author 1"
+                    filter = buildFilter(
+                        items = listOf("author 1", "author 2"),
+                        selectedItem = selectedItem
                     ),
                     images = listOf(image1),
                     snackbarMessage = null

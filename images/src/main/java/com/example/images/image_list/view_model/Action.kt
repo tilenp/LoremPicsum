@@ -4,6 +4,7 @@ import com.example.domain.model.Image
 import com.example.images.image_list.model.FilterItem
 import com.example.images.image_list.model.ImageListData
 import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.ImageListFilter.Author.Companion.buildFilter
 
 internal sealed interface Action {
     fun map(data: ImageListData): ImageListData
@@ -20,22 +21,23 @@ internal sealed interface Action {
         }
     }
 
-    data class Content(
-        val authors: List<String>,
-        val images: List<Image>,
-        val selectedAuthor: String?
-    ) : Action {
+    data class ShowFilters(
+        val items: List<String>,
+        val selectedItem: FilterItem?
+    ): Action {
         override fun map(data: ImageListData): ImageListData {
-            if (data.isLoading) {
-                return data
-            }
             return data.copy(
-                filter = ImageListFilter.Author.authorFilter(
-                    authors = authors,
-                    selectedAuthor = selectedAuthor
-                ),
-                images = images,
+                filter = buildFilter(
+                    items = items,
+                    selectedItem = selectedItem
+                )
             )
+        }
+    }
+
+    data class ShowImages(val images: List<Image>) : Action {
+        override fun map(data: ImageListData): ImageListData {
+            return data.copy(images = images)
         }
     }
 

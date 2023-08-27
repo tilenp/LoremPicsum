@@ -29,7 +29,7 @@ internal class ImageListViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
-    private val eventDispatcher = MutableSharedFlow<Event>()
+    private val eventDispatcher = MutableSharedFlow<Event>(replay = 1)
     val state = merge(
         eventDispatcher.flatMapLatest { event -> event.execute() },
         contentFlow()

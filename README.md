@@ -1,7 +1,12 @@
 # LoremPicsum
 
 ## Architecture
-The architecture is MVVM/MVI. 
+- MVVM/MVI
+- view calls ViewModel's functions to dispatch an event
+- an event splits a complex task into a flow of actions
+- an action modifies state's data object
+- data object is pushed into a state factory
+- state factory returns a state to the view
 
 ## Tech stack
 - Kotlin Coroutines and Flows
@@ -10,6 +15,8 @@ The architecture is MVVM/MVI.
 - Room
 - Compose
 - DataStore
+- mockk
+- JUnit5
 
 ## Modules
 - app: entry point
@@ -29,3 +36,6 @@ The architecture is MVVM/MVI.
 - dto: represents data structure on the server
 - table: represents data structure in database
 - domain: represents data on the screen
+
+## Testing
+- feature module contains ViewModel tests

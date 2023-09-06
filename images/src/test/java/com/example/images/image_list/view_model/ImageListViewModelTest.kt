@@ -8,8 +8,8 @@ import com.example.domain.usecaae.GetAuthorsUseCase
 import com.example.domain.usecaae.GetImagesUseCase
 import com.example.domain.usecaae.LoadImagesUseCase
 import com.example.images.FakeDispatcherProvider
-import com.example.images.image_list.model.FilterItem
-import com.example.images.image_list.model.ImageListFilter.Author.Companion.buildFilter
+import com.example.images.image_list.model.MenuItem
+import com.example.images.image_list.model.ImageListDropdownMenu.Author.Companion.buildFilter
 import com.example.images.image_list.model.ImageListState
 import com.example.images.preferences.PreferencesRepository
 import io.mockk.coEvery
@@ -35,7 +35,7 @@ internal class ImageListViewModelTest {
     private val preferencesRepository: PreferencesRepository = mockk()
     private val testScope = TestScope()
 
-    private val getFilterFlow = MutableSharedFlow<FilterItem?>(replay = 1)
+    private val getFilterFlow = MutableSharedFlow<MenuItem?>(replay = 1)
     private val getAuthorsFlow = MutableSharedFlow<List<String>>(replay = 1)
     private val getImagesFlow = MutableSharedFlow<List<Image>>(replay = 1)
     private val image1 = Image(
@@ -208,8 +208,8 @@ internal class ImageListViewModelTest {
             items = listOf("author 1", "author 2"),
             selectedItem = null
         )
-        val filterItem = FilterItem.Author(text = "author 1", isSelected = false)
-        val selectedItem = FilterItem.Author(text = "author 1", isSelected = true)
+        val menuItem = MenuItem.Author(text = "author 1", isSelected = false)
+        val selectedItem = MenuItem.Author(text = "author 1", isSelected = true)
         setUp()
 
         viewModel.state.test {
@@ -240,7 +240,7 @@ internal class ImageListViewModelTest {
             )
 
             // expand dropdown
-            viewModel.expandFilter(filter = filter)
+            viewModel.expandDropdownMenu(menu = filter)
 
             // show content with expanded dropdown
             assertEquals(
@@ -253,7 +253,7 @@ internal class ImageListViewModelTest {
             )
 
             // apply filter
-            viewModel.applyFilter(filterItem = filterItem)
+            viewModel.applySelection(menuItem = menuItem)
 
             // show content with collapsed dropdown
             assertEquals(
@@ -266,7 +266,7 @@ internal class ImageListViewModelTest {
             )
 
             // filter gets stored into DataStore
-            coVerify(exactly = 1) { preferencesRepository.storeFilter(filterItem = filterItem) }
+            coVerify(exactly = 1) { preferencesRepository.storeFilter(menuItem = menuItem) }
 
             // DataStore emits selected filter
             getFilterFlow.emit(selectedItem)

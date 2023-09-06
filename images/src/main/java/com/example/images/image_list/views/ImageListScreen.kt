@@ -27,13 +27,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.ui.theme.Dimens
 import com.example.domain.model.Image
-import com.example.images.common.DropdownFilterView
+import com.example.images.common.DropdownView
 import com.example.images.common.LoadingView
 import com.example.images.common.MessageView
 import com.example.images.common.MyButton
 import com.example.images.common.MySnackbar
-import com.example.images.image_list.model.FilterItem
-import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.MenuItem
+import com.example.images.image_list.model.ImageListDropdownMenu
 import com.example.images.image_list.model.ImageListState
 import com.example.images.image_list.view_model.ImageListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,21 +49,21 @@ internal fun ImageListScreen(
 
     ImageListScreen(
         state = state,
-        onDropdownClick = viewModel::expandFilter,
-        onItemClick = viewModel::applyFilter,
-        onDismissRequest = viewModel::collapseFilter,
-        onClearFilterClick = viewModel::clearFilter,
-        onRetryClick = viewModel::refresh,
+        onDropdownClick = viewModel::expandDropdownMenu,
+        onItemClick = viewModel::applySelection,
+        onDismissRequest = viewModel::collapseDropdownMenu,
+        onClearFilterClick = viewModel::clearSelection,
+        onRetryClick = viewModel::loadImages,
     )
 }
 
 @Composable
 private fun ImageListScreen(
     state: ImageListState,
-    onDropdownClick: (ImageListFilter) -> Unit,
-    onItemClick: (FilterItem) -> Unit,
-    onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: (ImageListFilter) -> Unit,
+    onDropdownClick: (ImageListDropdownMenu) -> Unit,
+    onItemClick: (MenuItem) -> Unit,
+    onDismissRequest: (ImageListDropdownMenu) -> Unit,
+    onClearFilterClick: (ImageListDropdownMenu) -> Unit,
     onRetryClick: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -106,10 +106,10 @@ private fun ImageListScreen(
 @Composable
 private fun ContentView(
     state: ImageListState.Content,
-    onDropdownClick: (ImageListFilter) -> Unit,
-    onItemClick: (FilterItem) -> Unit,
-    onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: (ImageListFilter) -> Unit,
+    onDropdownClick: (ImageListDropdownMenu) -> Unit,
+    onItemClick: (MenuItem) -> Unit,
+    onDismissRequest: (ImageListDropdownMenu) -> Unit,
+    onClearFilterClick: (ImageListDropdownMenu) -> Unit,
     snackbarHostState: SnackbarHostState,
     onActionPerformed: () -> Unit
 ) {
@@ -135,18 +135,18 @@ private fun ContentView(
 
 @Composable
 private fun FilterView(
-    filter: ImageListFilter,
-    onDropdownClick: (ImageListFilter) -> Unit,
-    onItemClick: (FilterItem) -> Unit,
-    onDismissRequest: (ImageListFilter) -> Unit,
-    onClearFilterClick: (ImageListFilter) -> Unit,
+    filter: ImageListDropdownMenu,
+    onDropdownClick: (ImageListDropdownMenu) -> Unit,
+    onItemClick: (MenuItem) -> Unit,
+    onDismissRequest: (ImageListDropdownMenu) -> Unit,
+    onClearFilterClick: (ImageListDropdownMenu) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        DropdownFilterView(
+        DropdownView(
             modifier = Modifier.weight(3f),
-            filter = filter,
+            menu = filter,
             onDropdownClick = { onDropdownClick(filter) },
             onItemClick = onItemClick,
             onDismissRequest = onDismissRequest,

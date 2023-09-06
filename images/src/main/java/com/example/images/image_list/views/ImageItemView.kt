@@ -96,7 +96,7 @@ private fun PreviewPhotoItemView() {
     LoremPicsumTheme {
         Surface {
             ImageItemView(
-                modifier = Modifier.height(Sizes.smallImage),
+                modifier = Modifier,
                 image = Image(
                     id = "",
                     author = "Alejandro Escamilla",

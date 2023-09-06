@@ -16,22 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.core.ui.theme.Dimens
-import com.example.images.image_list.model.FilterItem
-import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.MenuItem
+import com.example.images.image_list.model.ImageListDropdownMenu
 import com.example.images.R as ImagesR
 
 @Composable
-internal fun DropdownFilterView(
+internal fun DropdownView(
     modifier: Modifier,
-    filter: ImageListFilter,
+    menu: ImageListDropdownMenu,
     onDropdownClick: () -> Unit,
-    onItemClick: (FilterItem) -> Unit,
-    onDismissRequest: (ImageListFilter) -> Unit
+    onItemClick: (MenuItem) -> Unit,
+    onDismissRequest: (ImageListDropdownMenu) -> Unit
 ) {
-    when (filter) {
-        is ImageListFilter.Author -> AuthorFilterView(
+    when (menu) {
+        is ImageListDropdownMenu.Filter.Author -> AuthorFilterView(
             modifier = modifier,
-            filter = filter,
+            filter = menu,
             onDropdownClick = onDropdownClick,
             onItemClick = onItemClick,
             onDismissRequest = onDismissRequest,
@@ -42,10 +42,10 @@ internal fun DropdownFilterView(
 @Composable
 private fun AuthorFilterView(
     modifier: Modifier,
-    filter: ImageListFilter.Author,
+    filter: ImageListDropdownMenu.Filter.Author,
     onDropdownClick: () -> Unit,
-    onItemClick: (FilterItem) -> Unit,
-    onDismissRequest: (ImageListFilter) -> Unit
+    onItemClick: (MenuItem) -> Unit,
+    onDismissRequest: (ImageListDropdownMenu) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -57,7 +57,7 @@ private fun AuthorFilterView(
                 .background(MaterialTheme.colorScheme.onSurface)
                 .clickable(onClick = { onDropdownClick() })
                 .padding(Dimens.spacing8),
-            text = filter.items.firstOrNull { it.isSelected }?.text
+            text = filter.items.firstOrNull { item -> item.isSelected }?.text
                 ?: stringResource(id = ImagesR.string.select_author),
             style = MaterialTheme.typography.bodyMedium,
             overflow = TextOverflow.Ellipsis,

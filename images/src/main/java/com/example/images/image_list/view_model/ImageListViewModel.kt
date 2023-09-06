@@ -5,10 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.utils.DispatcherProvider
 import com.example.domain.usecaae.GetAuthorsUseCase
 import com.example.domain.usecaae.GetImagesUseCase
-import com.example.domain.usecaae.LoadImagesUseCase
-import com.example.images.image_list.model.FilterItem
+import com.example.images.image_list.model.MenuItem
 import com.example.images.image_list.model.ImageListData
-import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.ImageListDropdownMenu
 import com.example.images.image_list.model.ImageListState
 import com.example.images.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +20,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @HiltViewModel
 internal class ImageListViewModel @Inject constructor(
-    private val loadImagesUseCase: LoadImagesUseCase,
+    private val taskBuilder: TaskBuilder,
     private val getAuthorsUseCase: GetAuthorsUseCase,
     private val getImagesUseCase: GetImagesUseCase,
     private val preferencesRepository: PreferencesRepository,
@@ -29,19 +28,23 @@ internal class ImageListViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
-    private val eventDispatcher = MutableSharedFlow<Event>(replay = 1)
+    private val taskDispatcher = MutableSharedFlow<Task>(replay = 1)
     val state = merge(
-        eventDispatcher.flatMapLatest { event -> event.execute() },
+        tasksFlow(),
         filtersFlow(),
         imagesFlow()
     )
-        .scan(initial = ImageListData.INITIAL) { data, action -> action.map(data = data) }
+        .scan(initial = ImageListData.INITIAL) { data, action -> action.apply(data = data) }
         .map { data -> stateFactory.create(data = data) }
         .stateIn(
             initialValue = ImageListState.Ignore,
             scope = viewModelScope.plus(dispatcherProvider.io),
             started = SharingStarted.WhileSubscribed(5000)
         )
+
+    private fun tasksFlow(): Flow<Action> {
+        return taskDispatcher.flatMapConcat { task -> task.actions }
+    }
 
     private fun filtersFlow(): Flow<Action> {
         return getAuthorsUseCase.invoke()
@@ -65,46 +68,36 @@ internal class ImageListViewModel @Inject constructor(
     }
 
     init {
-        refresh()
+        loadImages()
     }
 
-    fun refresh() {
+    fun loadImages() {
         viewModelScope.launch(dispatcherProvider.main) {
-            eventDispatcher.emit(Event.LoadImages(loadImages = loadImagesUseCase.invoke()))
+            taskDispatcher.emit(taskBuilder.loadImages())
         }
     }
 
-    fun expandFilter(filter: ImageListFilter) {
+    fun expandDropdownMenu(menu: ImageListDropdownMenu) {
         viewModelScope.launch(dispatcherProvider.main) {
-            eventDispatcher.emit(Event.ExpandFilter(filter = filter))
+            taskDispatcher.emit(taskBuilder.expandDropdownMenu(menu = menu))
         }
     }
 
-    fun applyFilter(filterItem: FilterItem) {
+    fun applySelection(menuItem: MenuItem) {
         viewModelScope.launch(dispatcherProvider.main) {
-            eventDispatcher.emit(
-                Event.ApplyFilter(
-                    filterItem = filterItem,
-                    preferencesRepository = preferencesRepository
-                )
-            )
+            taskDispatcher.emit(taskBuilder.applySelection(menuItem = menuItem))
         }
     }
 
-    fun collapseFilter(filter: ImageListFilter) {
+    fun collapseDropdownMenu(filter: ImageListDropdownMenu) {
         viewModelScope.launch(dispatcherProvider.main) {
-            eventDispatcher.emit(Event.CollapseFilter(filter = filter))
+            taskDispatcher.emit(taskBuilder.collapseDropdownMenu(filter = filter))
         }
     }
 
-    fun clearFilter(filter: ImageListFilter) {
+    fun clearSelection(menu: ImageListDropdownMenu) {
         viewModelScope.launch(dispatcherProvider.main) {
-            eventDispatcher.emit(
-                Event.ClearFilter(
-                    filter = filter,
-                    preferencesRepository = preferencesRepository
-                )
-            )
+            taskDispatcher.emit(taskBuilder.clearSelection(menu = menu))
         }
     }
 }

@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.images.image_list.model.FilterItem
-import com.example.images.image_list.model.ImageListFilter
+import com.example.images.image_list.model.MenuItem
+import com.example.images.image_list.model.ImageListDropdownMenu
 import com.example.images.preferences.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -24,23 +24,23 @@ internal class PreferencesRepositoryImpl @Inject constructor(
         val AUTHOR_FILTER = stringPreferencesKey("AUTHOR")
     }
 
-    override suspend fun storeFilter(filterItem: FilterItem) {
+    override suspend fun storeFilter(menuItem: MenuItem) {
         dataStore.edit { preferences ->
-            when (filterItem) {
-                is FilterItem.Author -> preferences[PreferencesKeys.AUTHOR_FILTER] = filterItem.text
+            when (menuItem) {
+                is MenuItem.Author -> preferences[PreferencesKeys.AUTHOR_FILTER] = menuItem.text
             }
         }
     }
 
-    override suspend fun clearFilter(filter: ImageListFilter) {
+    override suspend fun clearFilter(menu: ImageListDropdownMenu) {
         dataStore.edit { preferences ->
-            when (filter) {
-                is ImageListFilter.Author -> preferences.remove(PreferencesKeys.AUTHOR_FILTER)
+            when (menu) {
+                is ImageListDropdownMenu.Filter.Author -> preferences.remove(PreferencesKeys.AUTHOR_FILTER)
             }
         }
     }
 
-    override fun getFilter(): Flow<FilterItem?> {
+    override fun getFilter(): Flow<MenuItem?> {
         return dataStore.data
             .catch { exception -> emit(handleReadException(throwable = exception)) }
             .map { preferences -> mapFilter(preferences = preferences) }
@@ -53,9 +53,9 @@ internal class PreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun mapFilter(preferences: Preferences): FilterItem? {
+    private fun mapFilter(preferences: Preferences): MenuItem? {
         return preferences[PreferencesKeys.AUTHOR_FILTER]?.let { text ->
-            FilterItem.Author(text = text, isSelected = true)
+            MenuItem.Author(text = text, isSelected = true)
         }
     }
 }
